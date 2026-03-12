@@ -1,16 +1,21 @@
 <?php
 
-if( isset( $_POST[ 'Submit' ] ) ) {
-    // Get input and validate strictly - only allow valid IP addresses
-    $target = stripslashes( $_POST[ 'ip' ] );
+if( isset( $_POST[ 'Submit' ]  ) ) {
+    // Get input
+    $target = $_REQUEST[ 'ip' ];
 
-    if( !filter_var( $target, FILTER_VALIDATE_IP ) ) {
-        $html .= '<pre>Invalid IP address.</pre>';
-    } else {
-        // Safe: use escapeshellarg to prevent command injection
-        $cmd = shell_exec( 'ping -c 4 ' . escapeshellarg( $target ) );
-        $html .= "<pre>{$cmd}</pre>";
+    // Determine OS and execute the ping command.
+    if( stristr( php_uname( 's' ), 'Windows NT' ) ) {
+        // Windows
+        $cmd = shell_exec( 'ping  ' . $target );
     }
+    else {
+        // *nix
+        $cmd = shell_exec( 'ping  -c 4 ' . $target );
+    }
+
+    // Feedback for the end user
+    $html .= "<pre>{$cmd}</pre>";
 }
 
 ?>
